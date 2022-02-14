@@ -30,22 +30,26 @@ func main() {
 	// So *timeLimit needs to be converted into time.Duration
 	timer := time.NewTimer(time.Duration(*timeLimit) * time.Second)
 	// waiting for a message from that channel. code will block until a message from channel is received.
-	<-timer.C
+	// <-timer.C
 
 	correct := 0
 	for i, p := range problems {
-		fmt.Printf("Problem #%d: %s = \n", i+1, p.q)
-		var answer string
-		fmt.Scanf("%s\n", &answer)
-		if answer == p.a {
-			fmt.Println("Correct!")
-			correct++
-		} else {
-			fmt.Println("Wrong answer!")
+		select {
+		case <-timer.C:
+			fmt.Printf("You scored %d out of %d.\n", correct, len(problems))
+			return
+		default:
+			fmt.Printf("Problem #%d: %s = \n", i+1, p.q)
+			var answer string
+			fmt.Scanf("%s\n", &answer)
+			if answer == p.a {
+				fmt.Println("Correct!")
+				correct++
+			} else {
+				fmt.Println("Wrong answer!")
+			}
 		}
 	}
-
-	fmt.Printf("You scored %d out of %d.\n", correct, len(problems))
 }
 
 func parseLines(lines [][]string) []problem {

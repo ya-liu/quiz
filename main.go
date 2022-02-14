@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 func main() {
 	csvFilename := flag.String("csv", "problems.csv", "a csv file in the format of 'question,answer'")
+	timeLimit := flag.Int("limit", 30, "the time limit for the quiz in seconds")
 	flag.Parse()
 
 	file, err := os.Open(*csvFilename)
@@ -22,6 +24,13 @@ func main() {
 		exit("Failed to parse the provided CSV file.")
 	}
 	problems := parseLines(lines)
+
+	// *timeLimit is an int
+	// time.Second is a time.Duration
+	// So *timeLimit needs to be converted into time.Duration
+	timer := time.NewTimer(time.Duration(*timeLimit) * time.Second)
+	// waiting for a message from that channel. code will block until a message from channel is received.
+	<-timer.C
 
 	correct := 0
 	for i, p := range problems {

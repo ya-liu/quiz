@@ -33,8 +33,10 @@ func main() {
 	// <-timer.C
 
 	correct := 0
+
+problemloop:
 	for i, p := range problems {
-		fmt.Printf("Problem #%d: %s = \n", i+1, p.q)
+		fmt.Printf("Problem #%d: %s = ", i+1, p.q)
 		answerCh := make(chan string)
 		go func() {
 			var answer string
@@ -44,8 +46,8 @@ func main() {
 
 		select {
 		case <-timer.C:
-			fmt.Printf("\nYou scored %d out of %d.\n", correct, len(problems))
-			return
+			fmt.Println()
+			break problemloop
 		case answer := <-answerCh:
 			if answer == p.a {
 				fmt.Println("Correct!")
@@ -55,6 +57,7 @@ func main() {
 			}
 		}
 	}
+	fmt.Printf("You scored %d out of %d.\n", correct, len(problems))
 }
 
 func parseLines(lines [][]string) []problem {
